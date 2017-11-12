@@ -1,0 +1,11 @@
+{
+	"Changelist" : 3586342,
+	"CompatibleChangelist" : 3573198,
+	"BuildId" : "a85275cd-d363-4594-bbcc-177600e839e0",
+	"Modules" : 
+	{
+		"CriWareEditor" : "UE4Editor-CriWareEditor.dll",
+		"CriWareRuntime" : "UE4Editor-CriWareRuntime.dll",
+		"CriWareSequencer" : "UE4Editor-CriWareSequencer.dll"
+	}
+}
