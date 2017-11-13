@@ -77,7 +77,7 @@ namespace Entity {
 		glm::vec3 velocity;						///速度
 		glm::vec4 color = glm::vec4(1, 1, 1, 1);///色
 		Mesh::MeshPtr mesh;						///エンティティを描画するときに使われるメッシュデータ
-		TexturePtr texture;						///エンティティを描画するときに使われるテクスチャ
+		TexturePtr texture[2];						///エンティティを描画するときに使われるテクスチャ
 		Shader::ProgramPtr program;				///エンティティを描画するときに使われるシェーダ
 		GLintptr uboOffset;						///UBOのエンティティ用領域バイトオフセット
 		UpdateFuncType updateFunc;				///状態更新関数
@@ -94,7 +94,7 @@ namespace Entity {
 		static BufferPtr Create(size_t maxEntityCount, GLsizeiptr ubSizePerEntity,
 			int bindingPoint, const char* name);
 
-		Entity* AddEntity(int groupId,const glm::vec3& pos, const Mesh::MeshPtr& m, const TexturePtr& t,
+		Entity* AddEntity(int groupId,const glm::vec3& pos, const Mesh::MeshPtr& m, const TexturePtr t[2],
 			const Shader::ProgramPtr& p, Entity::UpdateFuncType func);
 		void RemoveEntity(Entity* entity);
 		void Update(double delta, const glm::mat4& matView, const glm::mat4& matProj);

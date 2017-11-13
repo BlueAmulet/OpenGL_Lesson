@@ -16,18 +16,22 @@
 #define USE_CONTROLLER    1
 
 
-#define TEXTURE_NAME		"Res/cosmo.png"
-#define IMAGE_FILE_TOROID   "Res/Toroid/Toroid.bmp"
-#define MODEL_FILE_TOROID   "Res/Toroid/Toroid.fbx"
-#define IMAGE_FILE_BULLET   "Res/Model/tama.png"
-#define MODEL_FILE_BULLET   "Res/Model/tama.fbx"
-#define IMAGE_FILE_PLAYER	"Res/Player/Player.bmp"
-#define MODEL_FILE_PLAYER	"Res/Player/Player.fbx"
-#define MODEL_FILE_BLAST	"Res/Model/Blast.fbx"
-#define FONT_FILE_UNINEUE	"Res/Font/UniNeue.fnt"
-
-#define MODEL_FILE_SPACESPHERE	"Res/Model/SpaceSphere.fbx"
+#define TEXTURE_NAME			"Res/cosmo.png"
+#define IMAGE_FILE_TOROID		"Res/Toroid/Toroid.bmp"
+#define IMAGE_FILE_PLAYER		"Res/Player/Player.bmp"
 #define IMAGE_FILE_SPACESPHERE	"Res/Model/SpaceSphere.bmp"
+#define IMAGE_FILE_BULLET		"Res/Model/tama.png"
+
+#define NORMALMAP_FILE_TROID	"Res/Toroid/Toroid.Normal.png"
+#define NORMALMAP_FILE_DUMMY	"Res/Toroid/Dummy.Normal.bmp"
+
+#define MODEL_FILE_TOROID		"Res/Toroid/Toroid.fbx"
+#define MODEL_FILE_PLAYER		"Res/Player/Player.fbx"
+#define MODEL_FILE_BLAST		"Res/Model/Blast.fbx"
+#define MODEL_FILE_SPACESPHERE	"Res/Model/SpaceSphere.fbx"
+#define MODEL_FILE_BULLET		"Res/Model/tama.fbx"
+
+#define FONT_FILE_UNINEUE		"Res/Font/UniNeue.fnt"
 
 #define AUDIO_FILE_ACF_SAMPLE	"Res/Audio/SampleSound.acf"
 #define AUDIO_FILE_ACB_SAMPLE	"Res/Audio/SampleCueSheet.acb"

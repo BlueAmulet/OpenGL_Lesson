@@ -120,6 +120,8 @@ int main(int argc, const char * argv[]) {
 
 	game.LoadTextureFromFile(IMAGE_FILE_SPACESPHERE);
 	game.LoadTextureFromFile(IMAGE_FILE_TOROID);
+	game.LoadTextureFromFile(NORMALMAP_FILE_TROID);
+	game.LoadTextureFromFile(NORMALMAP_FILE_DUMMY);
 	game.LoadTextureFromFile(IMAGE_FILE_PLAYER);
 
 	game.LoadMeshFromFile(MODEL_FILE_SPACESPHERE);

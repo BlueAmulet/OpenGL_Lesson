@@ -4,6 +4,7 @@
 #include "GameEngine.h"
 #include "GLFWEW.h"
 #include "Audio.h"
+#include "Constants.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
@@ -314,6 +315,7 @@ bool GameEngine::LoadMeshFromFile(const char * filename)
 * @param pos		エンティティの場所
 * @param meshName	エンティティの表示に使用するメッシュ名
 * @param texName	エンティティの表示に使用するテクスチャファイル名
+* @param normalName	エンティティの表示に使用するノーマルマップテクスチャ名
 * @param func		エンティティの状態を更新する関数（または関数オブジェクト）
 * @param shader		エンティティの表示に使うシェーダ名
 *
@@ -322,8 +324,7 @@ bool GameEngine::LoadMeshFromFile(const char * filename)
 *			回転や拡大率はこのポインタ経由で設定する
 *			なお、このポインタをアプリケーション側で保持する必要はない
 */
-Entity::Entity * GameEngine::AddEntity(int groupId, const glm::vec3 & pos, const char * meshName, const char * texName,
-	Entity::Entity::UpdateFuncType func, const char* shader){
+Entity::Entity * GameEngine::AddEntity(int groupId, const glm::vec3 & pos, const char * meshName, const char * texName, const char * normalName, Entity::Entity::UpdateFuncType func, const char * shader){
 	decltype(shaderMap)::const_iterator itr = shaderMap.end();
 	if (shader) {
 		itr = shaderMap.find(shader);
@@ -335,12 +336,35 @@ Entity::Entity * GameEngine::AddEntity(int groupId, const glm::vec3 & pos, const
 		}
 	}
 	const Mesh::MeshPtr& mesh = meshBuffer->GetMesh(meshName);
-	auto texItr = textureBuffer.find(texName);
-	if (texItr == textureBuffer.end()) {
-		return nullptr;
+	TexturePtr tex[2];
+	tex[0] = GetTexture(texName);
+	if (normalName) {
+		tex[1] = GetTexture(normalName);
 	}
-	const TexturePtr& tex = textureBuffer.find(texName)->second;
+	else {
+		tex[1] = GetTexture(NORMALMAP_FILE_DUMMY);
+	}
 	return entityBuffer->AddEntity(groupId, pos, mesh, tex, itr->second, func);
+}
+
+/**
+* エンティティを追加する
+*
+* @param groupId	エンティティのグループID
+* @param pos		エンティティの場所
+* @param meshName	エンティティの表示に使用するメッシュ名
+* @param texName	エンティティの表示に使用するテクスチャファイル名
+* @param func		エンティティの状態を更新する関数（または関数オブジェクト）
+* @param shader		エンティティの表示に使うシェーダ名
+*
+* @return	追加したエンティティへのポインタ
+*			これ以上エンティティを追加できない場合はnullptrが返される
+*			回転や拡大率はこのポインタ経由で設定する
+*			なお、このポインタをアプリケーション側で保持する必要はない
+*/
+Entity::Entity * GameEngine::AddEntity(int groupId, const glm::vec3 & pos, const char * meshName, const char * texName,
+	Entity::Entity::UpdateFuncType func, const char* shader){
+	return AddEntity(groupId, pos, meshName, texName, nullptr, func, shader);
 }
 
 /**

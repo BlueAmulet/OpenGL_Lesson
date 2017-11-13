@@ -3,6 +3,7 @@
 */
 #include "Entity.h"
 #include "Uniform.h"
+#include "Constants.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <algorithm>
@@ -122,7 +123,7 @@ namespace Entity {
 	* @param groupId	エンティティのグループID
 	* @param position	エンティティの座標
 	* @param mesh		エンティティの表示に使用するメッシュ
-	* @param texture	エンティティの表示に使うテクスチャ
+	* @param texture[2]	エンティティの表示に使うテクスチャ( 0 : テクスチャ、 1 : ノーマルマップ)
 	* @param program	エンティティの表示に使用するシェーダプログラム
 	* @param fuc		エンティティの状態を更新する関数（または関数オブジェクト）
 	*
@@ -132,7 +133,7 @@ namespace Entity {
 	*			このポインタをアプリケーション側で保持する必要はない
 	*/
 	Entity* Buffer::AddEntity(int groupId, const glm::vec3& position, const Mesh::MeshPtr& mesh,
-		const TexturePtr& texture, const Shader::ProgramPtr& program, Entity::UpdateFuncType func) {
+		const TexturePtr texture[2], const Shader::ProgramPtr& program, Entity::UpdateFuncType func) {
 		if (freeList.prev == freeList.next) {
 			std::cerr << "WARNIG in Entity::Buffer::AddEntity: "
 				"空きエンティティがありません" << std::endl;
@@ -157,7 +158,8 @@ namespace Entity {
 		entity->scale = glm::vec3(1, 1, 1);
 		entity->velocity = glm::vec3();
 		entity->mesh = mesh;
-		entity->texture = texture;
+		entity->texture[0] = texture[0];
+		entity->texture[1] = texture[1];
 		entity->program = program;
 		entity->updateFunc = func;
 		entity->isActive = true;
@@ -190,7 +192,9 @@ namespace Entity {
 
 		freeList.Insert(p);
 		p->mesh.reset();
-		p->texture.reset();
+		for (auto& e : p->texture) {
+			e.reset();
+		}
 		p->program.reset();
 		p->color = glm::vec4(1, 1, 1, 1);
 		p->scale = glm::vec4(1, 1, 1, 1);
@@ -274,7 +278,9 @@ namespace Entity {
 				const LinkEntity& e = *static_cast<const LinkEntity*>(itr);
 				if (e.mesh && e.texture && e.program) {
 					e.program->UseProgram();
-					e.program->BindTexture(GL_TEXTURE0, GL_TEXTURE_2D, e.texture->Id());
+					for (size_t i = 0; i < ARRAY_SIZE(e.texture); ++i) {
+						e.program->BindTexture(GL_TEXTURE0 + i, GL_TEXTURE_2D, e.texture[i]->Id());
+					}
 					ubo->BindBufferRange(e.uboOffset, ubSizePerEntity);
 					e.mesh->Draw(meshBuffer);
 				}

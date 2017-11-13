@@ -182,10 +182,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Res\CellShader.frag" />
+    <None Include="Res\CellShader.vert" />
+    <None Include="Res\ColorFilter.frag" />
+    <None Include="Res\ColorFilter.vert" />
     <None Include="Res\Font.frag" />
     <None Include="Res\Font.vert" />
     <None Include="Res\NonLighting.frag" />
     <None Include="Res\NonLighting.vert" />
+    <None Include="Res\Posterization.frag" />
+    <None Include="Res\Posterization.vert" />
+    <None Include="Res\Tutorial.frag" />
+    <None Include="Res\Tutorial.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

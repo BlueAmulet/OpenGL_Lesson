@@ -166,9 +166,10 @@ namespace GameState {
 			const std::uniform_int_distribution<> rndAddingCount(1, 5);
 			for (int i = rndAddingCount(game.Rand()); i > 0; --i) {
 				const glm::vec3 pos(distributerX(game.Rand()), 0, distributerZ(game.Rand()));
-				if (Entity::Entity* p = game.AddEntity(EntityGroupId_Enemy, pos, "Toroid", IMAGE_FILE_TOROID, UpdateToroid())) {
+				if (Entity::Entity* p = game.AddEntity(EntityGroupId_Enemy, pos, "Toroid", IMAGE_FILE_TOROID, NORMALMAP_FILE_TROID, UpdateToroid())) {
 					p->Velocity(glm::vec3(pos.x < 0 ? 1.0f : -1.0f, 0, -4));
 					p->Collision(collisionDataList[EntityGroupId_Enemy]);
+					p->Scale(glm::vec3(3));
 				}
 			}
 			interval = rndInterval(game.Rand());

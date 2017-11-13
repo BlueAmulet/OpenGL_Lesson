@@ -200,7 +200,7 @@ namespace Font {
 				p += 4;
 				vboSize += 4;
 			}
-			pos.x += fontSize * reciprocalScreenSize.x * scale.x;
+			pos.x += font.xadvance * reciprocalScreenSize.x * scale.x;
 		}
 		return true;
 	}
