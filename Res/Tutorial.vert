@@ -22,7 +22,7 @@ layout (std140) uniform VertexData{
 } vertexData;
 
 void main() {
-    outColor = vColor * vertexData.color;
+	outColor = vColor * vertexData.color;
     outTexCoord = vTexCoord;
     outWorldPosition = (vertexData.matModel * vec4(vPosition, 1.0)).xyz;
 	mat3 matNormal = mat3(vertexData.matNormal);

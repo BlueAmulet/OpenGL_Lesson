@@ -103,7 +103,7 @@ namespace GameState {
 				vec.z = -1;
 			}
 			if (vec.x || vec.z) {
-				vec = glm::normalize(vec) * 2.0f;
+				vec = glm::normalize(vec) * 5.0f;
 			}
 			entity.Velocity(vec);
 			entity.Rotation(glm::vec3(0, 0, rotZ));
@@ -131,7 +131,6 @@ namespace GameState {
 				shotInterval = 0;
 			}
 		}
-
 	private:
 		double shotInterval = 0;
 	};
@@ -145,7 +144,9 @@ namespace GameState {
 		if (!pPlayer) {
 			pPlayer = game.AddEntity(EntityGroupId_Player, glm::vec3(0, 0, 2), "Aircraft", "Res/Player/Player.bmp", UpdatePlayer());
 			pPlayer->Collision(collisionDataList[EntityGroupId_Player]);
+			pPlayer->Color(glm::vec4(1) * 2.0f);
 		}
+
 		if (pPlayer) {
 			if (pPlayer->GroupId() != EntityGroupId_Player) {
 				rebornTimer -= delta;
@@ -169,7 +170,6 @@ namespace GameState {
 				if (Entity::Entity* p = game.AddEntity(EntityGroupId_Enemy, pos, "Toroid", IMAGE_FILE_TOROID, NORMALMAP_FILE_TROID, UpdateToroid())) {
 					p->Velocity(glm::vec3(pos.x < 0 ? 1.0f : -1.0f, 0, -4));
 					p->Collision(collisionDataList[EntityGroupId_Enemy]);
-					p->Scale(glm::vec3(3));
 				}
 			}
 			interval = rndInterval(game.Rand());

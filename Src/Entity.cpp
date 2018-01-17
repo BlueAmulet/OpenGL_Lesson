@@ -146,12 +146,6 @@ namespace Entity {
 		}
 		LinkEntity* entity = static_cast<LinkEntity*>(freeList.prev);
 		activeList[groupId].Insert(entity);
-		if (groupId == 2) {
-			std::cout << "“G¶¬" << std::endl;
-		}
-		if (groupId == 4) {
-			std::cout << "”š”­" << std::endl;
-		}
 		entity->groupId = groupId;
 		entity->position = position;
 		entity->rotation = glm::quat();

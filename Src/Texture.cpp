@@ -34,6 +34,11 @@ Texture::~Texture() {
 *          失敗した場合は nullptr を返す
 */
 TexturePtr Texture::Create(int width, int height, GLenum iformat, GLenum format, const void *data) {
+	GLenum type;
+	switch (iformat) {
+	case GL_RGBA16F: type = GL_HALF_FLOAT; break;
+	default: type = GL_UNSIGNED_BYTE;
+	}
 	//構造体はクラスらしいぞ  ↓Texture継承してる
 	struct Impl : Texture {};
 	TexturePtr p = std::make_shared<Impl>();
@@ -41,7 +46,7 @@ TexturePtr Texture::Create(int width, int height, GLenum iformat, GLenum format,
 	p->height = height;
 	glGenTextures(1, &p->texId);
 	glBindTexture(GL_TEXTURE_2D, p->texId);
-	glTexImage2D(GL_TEXTURE_2D, 0, iformat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, iformat, width, height, 0, format, type, data);
 	//エラー取得
 	const GLenum result = glGetError();
 	if (result != GL_NO_ERROR) {

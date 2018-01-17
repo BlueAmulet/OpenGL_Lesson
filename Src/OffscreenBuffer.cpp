@@ -11,19 +11,20 @@
 /**
 * オフスクリーンバッファを作成する
 *
-* @param   w   オフスクリーンバッファの幅（ピクセル数）
-* @param   h  オフスクリーンバッファの高さ（ピクセル数）
-*
+* @param   w	オフスクリーンバッファの幅（ピクセル数）
+* @param   h	オフスクリーンバッファの高さ（ピクセル数）
+* @param   f	テクスチャ形式
+* 
 * @return  作成したオフスクリーンバッファへのポインタ
 */
-OffscreenBufferPtr OffscreenBuffer::Create(int w, int h) {
+OffscreenBufferPtr OffscreenBuffer::Create(int w, int h, GLenum f) {
 	struct Impl : OffscreenBuffer {};
 	OffscreenBufferPtr offscreen = std::make_shared<Impl>();
 	if (!offscreen) {
 		return offscreen;
 	}
 
-	offscreen->tex = Texture::Create(w, h, GL_RGBA8, GL_RGBA, nullptr);
+	offscreen->tex = Texture::Create(w, h, f, GL_RGBA, nullptr);
 	if (!offscreen->tex) {
 		return {};
 	}
@@ -40,6 +41,9 @@ OffscreenBufferPtr OffscreenBuffer::Create(int w, int h) {
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, offscreen->depthBuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, offscreen->tex->Id(), 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	offscreen->width = w;
+	offscreen->height = h;
 
 	return offscreen;
 }

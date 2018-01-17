@@ -195,7 +195,15 @@ bool GameEngine::Init(int w, int h, const char * title)
 	vao = CreateVAO(vbo, ibo);
 	uboLight = UniformBuffer::Create(sizeof(Uniform::LightData), 1, "LightData");
 	uboPostEffect = UniformBuffer::Create(sizeof(Uniform::PostEffectData), 2, "PostEffectData");
-	offscreen = OffscreenBuffer::Create(960, 600);
+	offscreen = OffscreenBuffer::Create(960, 600, GL_RGBA16F);
+	for (int i = 0, scale = 4; i < bloomBufferCount; ++i, scale *= 4) {
+		const int w = 960 / scale;
+		const int h = 600 / scale;
+		offBloom[i] = OffscreenBuffer::Create(w, h, GL_RGBA16F);
+		if (!offBloom[i]) {
+			return false;
+		}
+	}
 	if (!vbo || !ibo || !vao || !uboLight || !uboPostEffect || !offscreen) {
 		std::cerr << "ERROR : GameEngineの初期化に失敗" << std::endl;
 		return false;
@@ -205,6 +213,9 @@ bool GameEngine::Init(int w, int h, const char * title)
 		{"Tutorial", "Res/Tutorial.vert", "Res/Tutorial.frag"},
 		{"ColorFilter", "Res/ColorFilter.vert", "Res/ColorFilter.frag"},
 		{"NonLighting", "Res/NonLighting.vert", "Res/NonLighting.frag"},
+		{"HiLumExtract", "Res/TexCoord.vert", "Res/HiLumExtraction.frag"},
+		{"Shrink","Res/TexCoord.vert", "Res/Shrink.frag"},
+		{"Blur3x3", "Res/TexCoord.vert", "Res/Blur3x3.frag"},
 	};
 	shaderMap.reserve(sizeof(shaderNameList) / sizeof(shaderNameList[0]));
 	for (auto& e : shaderNameList) {
@@ -567,18 +578,52 @@ void GameEngine::Render() const{
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	uboLight->BufferSubData(&lightData);
 	entityBuffer->Draw(meshBuffer);
+	glBindVertexArray(vao);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
-	glBindVertexArray(vao);
+
+
+	//ブルームをするときはテクスチャの範囲外の指定をGL_CLAMP_TO_BORDERとかに変換しないと範囲外を指定してしまったときにおかしくなる_
+	const Shader::ProgramPtr& progHiLumExtract = shaderMap.find("HiLumExtract")->second;
+	progHiLumExtract->UseProgram();
+	glBindFramebuffer(GL_FRAMEBUFFER, offBloom[0]->GetFrameBuffer());
+	glViewport(0, 0, offBloom[0]->Width(), offBloom[0]->Height());
+	progHiLumExtract->BindTexture(GL_TEXTURE0, GL_TEXTURE_2D, offscreen->GetTexture());
+	glDrawElements(GL_TRIANGLES, renderingParts[1].size, GL_UNSIGNED_INT, renderingParts[1].offset);
+
+	const Shader::ProgramPtr& progShrink = shaderMap.find("Shrink")->second;
+	progShrink->UseProgram();
+	for (int i = 1; i < bloomBufferCount; ++i) {
+		glBindFramebuffer(GL_FRAMEBUFFER, offBloom[i]->GetFrameBuffer());
+		glViewport(0, 0, offBloom[i]->Width(), offBloom[i]->Height());
+		progShrink->BindTexture(GL_TEXTURE0, GL_TEXTURE_2D, offBloom[i - 1]->GetTexture());
+		glDrawElements(GL_TRIANGLES, renderingParts[1].size, GL_UNSIGNED_INT, renderingParts[1].offset);
+	}
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	const Shader::ProgramPtr& progBlur3x3 = shaderMap.find("Blur3x3")->second;
+	progBlur3x3->UseProgram();
+	for (int i = bloomBufferCount - 1; i > 0 ; --i) {
+		glBindFramebuffer(GL_FRAMEBUFFER, offBloom[i - 1]->GetFrameBuffer());
+		glViewport(0, 0, offBloom[i - 1]->Width(), offBloom[i - 1]->Height());
+		progBlur3x3->BindTexture(GL_TEXTURE0, GL_TEXTURE_2D, offBloom[i]->GetTexture());
+		glDrawElements(GL_TRIANGLES, renderingParts[1].size, GL_UNSIGNED_INT, renderingParts[1].offset);
+	}
+
+	glDisable(GL_BLEND);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 960, 600);
 	const Shader::ProgramPtr& progColorFilter = shaderMap.find("ColorFilter")->second;
 	progColorFilter->UseProgram();
 	Uniform::PostEffectData postEffect;
 	uboPostEffect->BufferSubData(&postEffect);
 	progColorFilter->BindTexture(GL_TEXTURE0, GL_TEXTURE_2D, offscreen->GetTexture());
+	progColorFilter->BindTexture(GL_TEXTURE1, GL_TEXTURE_2D, offBloom[0]->GetTexture());
 	glDrawElements(GL_TRIANGLES, renderingParts[1].size, GL_UNSIGNED_INT, renderingParts[1].offset);
+
 	fontRenderer.Draw();
 }
 

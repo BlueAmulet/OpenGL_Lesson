@@ -20,10 +20,11 @@ typedef std::shared_ptr<OffscreenBuffer> OffscreenBufferPtr;
 */
 class OffscreenBuffer {
 public:
-	static OffscreenBufferPtr Create(int w, int h);
+	static OffscreenBufferPtr Create(int w, int h, GLenum f = GL_RGBA8);
 	GLuint GetFrameBuffer() const { return frameBuffer; };         ///フレームバッファを取得する
 	GLuint GetTexture() const { return tex->Id(); }               ///フレームバッファ用tクス茶を取得する
-
+	int Width() { return width; }
+	int Height() { return height; }
 private:
 	OffscreenBuffer() = default;
 	OffscreenBuffer(const OffscreenBuffer&) = delete;
@@ -34,6 +35,8 @@ private:
 	TexturePtr tex;            ///フレームバッファ用テクスチャ
 	GLuint depthBuffer = 0;     ///震度バッファオブジェクト
 	GLuint frameBuffer = 0;     ///フレームバッファオブジェクト
+	int width;
+	int height;
 };
 
 #endif /* OffscreenBuffer_h */
